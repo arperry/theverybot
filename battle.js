@@ -9,7 +9,7 @@ function Battle(challenge, page) {
 	this.state = {
 		feedbackEnabled: !!window.config.feedback,
 		finishCountdown: 0,
-		started: 0,
+		status: 0,
 		record: this.Record.getRecord(this.opponent),
 		version: window.version
 	};
@@ -25,21 +25,21 @@ Battle.prototype.processBattle = function(page) {
 				chat,
 				choice;
 			if (!$tab.length) {
-				if (state.started) {
-					state.finished = 1;
+				if (state.status) {
+					state.status = -1;
 				}
 				return;
 			}
 			$tab.click();
 			$room = window.room.$battle.parent();
-			if (!state.started) {
+			if (!state.status) {
 				VeryBotChat.sayHello(window.room, state.record, room.battle.sides[1].name);
 				state.team = VeryBotScrape.getTeamData(window.room);
 				state.enemyTeam = VeryBotScrape.getEnemyData(window.room);
-				state.started = 1;
+				state.status = 1;
 				state.lastChat = 0;
 			}
-			if (state.started) {
+			if (state.status) {
 				// Check chat
 				chat = VeryBotScrape.getChat(room, state.lastChat);
 				state.lastChat = chat.lastChat;
@@ -51,7 +51,12 @@ Battle.prototype.processBattle = function(page) {
 					choice = VeryBotDecide.choosePokemon(state.team, state.enemyTeam, BattleMovedex, BattleTypeChart);
 					state.active = choice;
 					window.room.chooseTeamPreview(choice);
-					state.message = 'Choosing ' + state.team[choice].name;
+					state.message = 'Choosing ' + state.team[choice].name + ' (' + state.team[choice].moves.join(', ') + ')';
+				} else if (state.status === 1) {
+					if (VeryBotScrape.getEnemyActivePokemon(window.room)) {
+						state.message = 'Opponent chooses ' + VeryBotScrape.getEnemyActivePokemon(window.room).name;
+						state.status = 2;
+					}
 				} else if ($room.find('[name=chooseMove]').length) {
 					choice = VeryBotDecide.chooseMove(state.team[state.active],
 						VeryBotScrape.getEnemyActivePokemon(window.room),
@@ -66,7 +71,7 @@ Battle.prototype.processBattle = function(page) {
 				} else if (window.room.battleEnded) {
 					state.finishCountdown++;
 					if (state.finishCountdown >= 5) {
-						state.finished = 1;
+						state.status = -1;
 						state.winner = VeryBotScrape.getWinner(window.room);
 						state.message = 'Battle ended in ';
 						switch(state.winner) {
@@ -99,13 +104,14 @@ Battle.prototype.processBattle = function(page) {
 	}
 	if (this.state.error !== undefined && this.state.error !== '') {
 		console.log(this.id + ' *ERROR*: ' + this.state.error);
+		this.Record.error(this.state.error);
 		this.state.error = '';
 	}
 	if (this.state.feedback !== undefined && this.state.feedback.length) {
 		this.Record.recordFeedback(this.state.feedback);
 		this.state.feedback = [];
 	}
-	if (this.state.finished) {
+	if (this.state.status < 0) {
 		clearInterval(this.interval);
 		this.Record.recordMatch(this.opponent, this.state.winner);
 	}

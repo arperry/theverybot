@@ -3,7 +3,8 @@
 (function() {
 	'use strict';
 	var version = '0.1',
-		page = require('webpage').create();
+		page = require('webpage').create(),
+		Record = require('./record.js');
 	phantom.onError = function(msg, trace) {
 		console.log(msg);
 		trace.forEach(function(item) {
@@ -17,7 +18,10 @@
 
 	page.onConsoleMessage = function(msg) {
 		if (msg.indexOf('**') >= 0) {
-			console.log('*DEBUG*: ' + msg);
+			console.log('CONSOLE: ' + msg.substr(2));
+			if (msg.indexOf('ERROR') >= 0) {
+				Record.error(msg);
+			}
 		}
 	};
 

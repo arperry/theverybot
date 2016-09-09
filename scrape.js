@@ -30,12 +30,15 @@ var VeryBotScrape = {
 		};
 	},
 	getEnemyActivePokemon: function(room) {
-		return {
-			name: room.battle.sides[1].active[0].name,
-			level: room.battle.sides[1].active[0].level,
-			stats: room.battle.sides[1].active[0].baseStats,
-			types: room.battle.sides[1].active[0].types
+		if (room.battle.sides[1].active && room.battle.sides[1].active[0]) {
+			return {
+				name: room.battle.sides[1].active[0].name,
+				level: room.battle.sides[1].active[0].level,
+				stats: room.battle.sides[1].active[0].baseStats,
+				types: room.battle.sides[1].active[0].types
+			}
 		}
+		return false;
 	},
 	getEnemyData: function(room) {
 		var i, team = new Array(), poke;
@@ -62,7 +65,12 @@ var VeryBotScrape = {
 		if (movedex[move.replace(/0-9/g, '')]) {
 			return movedex[move.replace(/0-9/g, '')];
 		}
-		throw "What the heck kind of move is '" + move + "'?";
+		if (move === 'recharge') {
+			// This is a pseudomove - it doesn't really exist, but it shows up after Hyper Beam, et al.
+			return movedex.splash;
+		}
+		console.log("**ERROR: Unrecognized move '" + move + "'");
+		return movedex.splash;
 	},
 	getMoves: function(room, movedex) {
 		var move, moves = new Array();

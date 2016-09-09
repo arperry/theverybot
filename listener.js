@@ -41,13 +41,17 @@ function checkChallenges(page, battles) {
 			challenge.opponent = window.room.$battle.find('.trainer:last strong').text().trim();
 			challenges.push(challenge);
 		});
-		if (config.rankedFormat && typeof config.rankedFormat === 'string' && challenges.length === 0 && $('.button.mainmenu1.big').is(':not(.disabled)')) {
+		if (config.ranked && typeof config.ranked === 'string' && challenges.length === 0 && $('.button.mainmenu1.big').is(':not(.disabled)')) {
 			// If I'm not doing anything, try a ranked battle
-			state.queueCounter++;
+			if (typeof state.queueCounter !== 'number') {
+				state.queueCounter = 1;
+			} else {
+				state.queueCounter++;
+			}
 			if (state.queueCounter >= config.queueInterval) {
 				state.queueCounter = 0;
 				console.log('**Queueing for ranked CC1v1');
-				$('.button.mainmenu1.big').parents('.menugroup').find('.formatselect').val(config.rankedFormat);
+				$('.button.mainmenu1.big').parents('.menugroup').find('.formatselect').val(config.ranked);
 				$('.button.mainmenu1.big').click();
 			}
 		} else {
@@ -65,8 +69,8 @@ function checkChallenges(page, battles) {
 		}
 	}
 	for(i in battles) {
-		if (battles.hasOwnProperty(i) && battles[i].state && battles[i].state.finished) {
-			console.log('Closing battle ' + i);
+		if (battles.hasOwnProperty(i) && battles[i].battle && battles[i].battle.state < 0) {
+			delete(battles[i].battle);
 			delete(battles[i]);
 		}
 	}
