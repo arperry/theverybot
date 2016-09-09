@@ -8,9 +8,9 @@ The same AI used for CC1v1 could easily be applied to the 1v1 format, which is t
 
 ## State of the Bot
 
-The Very Bot is currently battle-capable. It will log on and patiently wait for someone to challenge it. It will reject any formats it isn't explicitly designed to accept (as specified in `formats.json`), and it will do its best to battle in any formats it does accept. It can 
+The Very Bot is currently battle-capable. It will log on and patiently wait for someone to challenge it. It will reject any formats it isn't explicitly designed to accept (as specified in `formats.json`), and it will do its best to battle in any formats it does accept.
 
-In the future, The Very Bot will attempt to play ranked battles.
+In the future, The Very Bot will attempt to play ranked battles when it has nothing else going on.
 
 ### Missing features
 
@@ -38,8 +38,18 @@ Want to run the bot on your own computer? You'll need the following:
 * [PhantomJS](http://phantomjs.org)
 * The code in this repository
 
-Once you've downloaded PhantomJS and The Very Bot, edit `credentials.json` with your Showdown credentials. (You can run The Very Bot on your own account, but you may want to make a separate account for it.) After that, to get the bot running:
+Once you've downloaded PhantomJS and The Very Bot, edit `credentials.json` with your Showdown credentials. (You can run The Very Bot on your own account, but you may want to make a separate account for it -- see below.) After that, to get the bot running:
 ```
 phantomjs showdown.js
 ```
 (This assumes that your working directory contains the Very Bot scripts and that the PhantomJS executable is in your path or in that directory. Adjust accordingly.)
+
+**WARNING:** The Very Bot will hijack any games on its account that begin after it starts running, whether or not it has any idea how to play that format. Don't use the bot on an account that you're currently using to battle.
+
+## Is this OK?
+
+Showdown staff member blizzardq said,
+```
+a cc1v1 bot should be ok
+```
+So yeah, it should be!
