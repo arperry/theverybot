@@ -5,7 +5,14 @@ function Battle(challenge, page) {
 	this.id = challenge.id;
 	this.opponent = challenge.opponent;
 	this.interval = setInterval(function() { this.processBattle(page) }.bind(this), 2000);
-	this.state = { started: 0 };
+	this.Record = require('./record.js');
+	this.state = {
+		feedbackEnabled: !!window.config.feedback,
+		finishCountdown: 0,
+		started: 0,
+		record: this.Record.getRecord(this.opponent),
+		version: window.version
+	};
 	console.log('Starting battle ' + this.id + ' against ' + this.opponent);
 }
 
@@ -26,7 +33,7 @@ Battle.prototype.processBattle = function(page) {
 			$tab.click();
 			$room = window.room.$battle.parent();
 			if (!state.started) {
-				VeryBotChat.sayHello(window.room);
+				VeryBotChat.sayHello(window.room, state.record, room.battle.sides[1].name);
 				state.team = VeryBotScrape.getTeamData(window.room);
 				state.enemyTeam = VeryBotScrape.getEnemyData(window.room);
 				state.started = 1;
@@ -36,7 +43,7 @@ Battle.prototype.processBattle = function(page) {
 				// Check chat
 				chat = VeryBotScrape.getChat(room, state.lastChat);
 				state.lastChat = chat.lastChat;
-				VeryBotChat.listen(chat.chats);
+				state.feedback = VeryBotChat.listen(chat.chats, state.record, room.battle.sides[1].name, state.version, state.feedbackEnabled);
 				
 				// Do some deciding
 				// For some reason, clicking on the buttons does nothing, so we have to fiddle with the Showdown internals.
@@ -54,24 +61,29 @@ Battle.prototype.processBattle = function(page) {
 					state.message = 'Choosing move #' + choice + ' (' + $move.attr('data-move') + ')';
 					$room.find('input[name=megaevo]:not(:checked)').click(); // I mean, you never know
 					window.room.chooseMove(choice, $move[0]);
+				} else if ($room.find('[name=setTimer][value=on]').length) {
+					$room.find('[name=setTimer][value=on]').click();
 				} else if (window.room.battleEnded) {
-					state.finished = 1;
-					state.winner = VeryBotScrape.getWinner(window.room);
-					state.message = 'Battle ended in ';
-					switch(state.winner) {
-						case -1:
-							state.message += 'a tie';
-							break;
-						case 0:
-							state.message += 'victory';
-							break;
-						case 1:
-							state.message += 'defeat';
-							break;
-						default:
-							state.message += 'an uncertain state';
+					state.finishCountdown++;
+					if (state.finishCountdown >= 5) {
+						state.finished = 1;
+						state.winner = VeryBotScrape.getWinner(window.room);
+						state.message = 'Battle ended in ';
+						switch(state.winner) {
+							case -1:
+								state.message += 'a tie';
+								break;
+							case 0:
+								state.message += 'victory';
+								break;
+							case 1:
+								state.message += 'defeat';
+								break;
+							default:
+								state.message += 'an uncertain state';
+						}
+						$('.closebutton[value=' + id + ']').click();
 					}
-					$('.closebutton[value=' + id + ']').click();
 				}
 			}
 		} catch(e) {
@@ -89,8 +101,13 @@ Battle.prototype.processBattle = function(page) {
 		console.log(this.id + ' *ERROR*: ' + this.state.error);
 		this.state.error = '';
 	}
+	if (this.state.feedback !== undefined && this.state.feedback.length) {
+		this.Record.recordFeedback(this.state.feedback);
+		this.state.feedback = [];
+	}
 	if (this.state.finished) {
 		clearInterval(this.interval);
+		this.Record.recordMatch(this.opponent, this.state.winner);
 	}
 }
 

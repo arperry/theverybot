@@ -95,6 +95,17 @@ var VeryBotScrape = {
 		return team;
 	},
 	getWinner: function(room) {
-		return 123; // dunno yet
+		// -1/0/1 = tie/win/loss
+		// -2 = no winner
+		var oppName = room.battle.sides[1].name,
+			winMsg = ' won the battle!',
+			winText = room.$chat.find('div:not(.chat):contains(' + winMsg + ')').text();
+		if (winText === '') {
+			return room.battleEnded ? -1 : -2;
+		} else if (winText === oppName + winMsg) {
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 };

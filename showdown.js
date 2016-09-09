@@ -2,7 +2,8 @@
 // Main function
 (function() {
 	'use strict';
-	var page = require('webpage').create();
+	var version = '0.1',
+		page = require('webpage').create();
 	phantom.onError = function(msg, trace) {
 		console.log(msg);
 		trace.forEach(function(item) {
@@ -25,7 +26,9 @@
 			wait = require('./wait.js'),
 			listener = require('./listener.js');
 		console.log('Status: ' + status);
-		window.state = { battles: [] };
+		window.config = require('./config.json');
+		window.state = { challenges: [], queueCounter: 0 };
+		window.version = version;
 		page.evaluate(function() { localStorage.setItem('foo', 'bar'); });
 		if (status === 'success') {
 			wait.waitFor(login.login(page), 'login complete', function() { listener.listen(page); }, -1);

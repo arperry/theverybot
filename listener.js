@@ -7,16 +7,17 @@ function listen(page) {
 	page.injectJs('decide.js');
 	page.injectJs('chat.js');
 	console.log('Starting to listen for challenges.');
-	setInterval(function() { checkChallenges(page); }, 3000);
+	window.battles = {};
+	setInterval(function() { checkChallenges(page, window.battles); }, 3000);
+	setInterval(function() { page.render('currentView.png'); }, 10000);
 }
 
-function checkChallenges(page) {
-	var challenges = [],
-		battles = window.state.battles,
+function checkChallenges(page, battles) {
+	var challenges = window.state.challenges,
 		Battle = require('./battle.js').Battle,
 		formats = require('./formats.json'),
 		i;
-	challenges = page.evaluate(function(formats) {
+	window.state = page.evaluate(function(formats, state, config) {
 		var challenges = new Array();
 		$('[name=acceptChallenge]').each(function() {
 			var $form = $(this).parents('form'),
@@ -40,11 +41,25 @@ function checkChallenges(page) {
 			challenge.opponent = window.room.$battle.find('.trainer:last strong').text().trim();
 			challenges.push(challenge);
 		});
-		return challenges;
-	}, formats);
+		if (config.rankedFormat && typeof config.rankedFormat === 'string' && challenges.length === 0 && $('.button.mainmenu1.big').is(':not(.disabled)')) {
+			// If I'm not doing anything, try a ranked battle
+			state.queueCounter++;
+			if (state.queueCounter >= config.queueInterval) {
+				state.queueCounter = 0;
+				console.log('**Queueing for ranked CC1v1');
+				$('.button.mainmenu1.big').parents('.menugroup').find('.formatselect').val(config.rankedFormat);
+				$('.button.mainmenu1.big').click();
+			}
+		} else {
+			state.queueCounter = 0;
+		}
+		state.challenges = challenges;
+		return state;
+	}, formats, window.state, window.config);
 	for(i = 0; i < challenges.length; ++i) {
 		if (!challenges[i].id) {
-			console.log('Rejected ' + challenges[i].format + ' battle from ' + challenges[i].opponent ? challenges[i].opponent.trim() : 'a mystery user');
+			console.log('Rejected ' + challenges[i].format + ' battle from '
+				+ (challenges[i].opponent ? challenges[i].opponent.trim() : 'a mystery user'));
 		} else if (battles[challenges[i].id] === undefined) {
 			battles[challenges[i].id] = { opponent: challenges[i].id, battle: new Battle(challenges[i], page) };
 		}

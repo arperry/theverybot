@@ -54,6 +54,8 @@ var VeryBotDecide = {
 			return 0;
 		} else if (movedata.selfdestruct) {
 			return 1; // we'd rather not
+		} else if (movedata.shortDesc && movedata.shortDesc.indexOf('Fails') === 0) {
+			return 0; // TODO: Last Resort strats (forget about Focus Punch)
 		} else if (movedata.damage === 'level') {
 			baseDamage = poke.level * baseFixed;
 		} else if (movedata.damage) {
@@ -80,7 +82,7 @@ var VeryBotDecide = {
 			baseDamage *= effectiveness;
 			baseDamage *= VeryBotDecide.getItemDamageModifier(poke, movedata, enemy, effectiveness);
 		}
-		if (movedata.desc.match(/charges on the first turn/) || movedata.desc.match(/user must recharge/)) {
+		if (movedata.desc && (movedata.desc.match(/charges on the first turn/) || movedata.desc.match(/user must recharge/) || movedata.desc.match(/two turns/))) {
 			// TODO: Recharge moves should be considered at full strength if they are expected to KO
 			baseDamage *= 0.5;
 		}

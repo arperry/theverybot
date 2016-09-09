@@ -1,0 +1,5 @@
+{
+	"ranked": false,
+	"queueInterval": 2,
+	"feedback": "./feedback.txt"
+}
