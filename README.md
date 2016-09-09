@@ -8,7 +8,7 @@ The same AI used for CC1v1 could easily be applied to the 1v1 format, which is t
 
 ## State of the Bot
 
-The Very Bot is currently battle-capable. It will log on and patiently wait for someone to challenge it. It will reject any formats it isn't explicitly designed to accept (as specified in `formats.json`), and it will do its best to battle in any formats it does accept. It can 
+The Very Bot is currently battle-capable. It will log on and patiently wait for someone to challenge it. It will reject any formats it isn't explicitly designed to accept (as specified in `formats.json`), and it will do its best to battle in any formats it does accept.
 
 In the future, The Very Bot will attempt to play ranked battles when it has nothing else going on.
 
