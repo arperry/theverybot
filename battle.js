@@ -1,7 +1,7 @@
 // battle.js
 // Interacting with the battle interface
-'use strict';
 function Battle(challenge, page) {
+	'use strict';
 	this.id = challenge.id;
 	this.opponent = challenge.opponent;
 	this.interval = setInterval(function() { this.processBattle(page) }.bind(this), 2000);
@@ -17,7 +17,9 @@ function Battle(challenge, page) {
 }
 
 Battle.prototype.processBattle = function(page) {
+	'use strict';
 	this.state = page.evaluate(function(id, state) {
+		'use strict';
 		try {
 			var $tab = $('.roomtab[href*=' + id + ']'),
 				$room,
@@ -54,7 +56,8 @@ Battle.prototype.processBattle = function(page) {
 					state.message = 'Choosing ' + state.team[choice].name + ' (' + state.team[choice].moves.join(', ') + ')';
 				} else if (state.status === 1) {
 					if (VeryBotScrape.getEnemyActivePokemon(window.room)) {
-						state.message = 'Opponent chooses ' + VeryBotScrape.getEnemyActivePokemon(window.room).name;
+						state.message = 'Opponent chooses ' + VeryBotScrape.getEnemyActivePokemon(window.room).name
+							+ '(possible abilities: ' + VeryBotScrape.getEnemyActivePokemon(window.room).abilities.join(', ') + ')';
 						state.status = 2;
 					}
 				} else if ($room.find('[name=chooseMove]').length) {
@@ -87,7 +90,6 @@ Battle.prototype.processBattle = function(page) {
 							default:
 								state.message += 'an uncertain state';
 						}
-						$('.closebutton[value=' + id + ']').click();
 					}
 				}
 			}
@@ -113,6 +115,8 @@ Battle.prototype.processBattle = function(page) {
 	}
 	if (this.state.status < 0) {
 		clearInterval(this.interval);
+		page.render('battleEnd.png');
+		page.evaluate(function(id) { $('.closebutton[value=' + id + ']').click(); }, this.id);
 		this.Record.recordMatch(this.opponent, this.state.winner);
 	}
 }

@@ -1,7 +1,7 @@
 // listener.js
 // Listening for challenges
-'use strict';
 function listen(page) {
+	'use strict';
 	var interval;
 	page.injectJs('scrape.js');
 	page.injectJs('decide.js');
@@ -13,6 +13,7 @@ function listen(page) {
 }
 
 function checkChallenges(page, battles) {
+	'use strict';
 	var challenges = window.state.challenges,
 		Battle = require('./battle.js').Battle,
 		formats = require('./formats.json'),
@@ -39,8 +40,13 @@ function checkChallenges(page, battles) {
 			$(this).click();
 			challenge.id = window.room.id;
 			challenge.opponent = window.room.$battle.find('.trainer:last strong').text().trim();
-			challenges.push(challenge);
+			if (challenge.id && challenge.opponent) {
+				// The room might not have fully loaded
+				challenges.push(challenge);
+				$('.roomlist a.ilink[href*=' + challenge.id + ']').attr('vbKnown', 'true');
+			}
 		});
+		$('.roomlist a.ilink:not([vbKnown])').click(); // Resume aborted battles
 		if (config.ranked && typeof config.ranked === 'string' && challenges.length === 0 && $('.button.mainmenu1.big').is(':not(.disabled)')) {
 			// If I'm not doing anything, try a ranked battle
 			if (typeof state.queueCounter !== 'number') {

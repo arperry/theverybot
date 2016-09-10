@@ -19,7 +19,6 @@ function waitFor(testFn, desc, onReady, timeout) {
 				}
 			} else if (maxtimeout > 0 && new Date().getTime() - start >= maxtimeout) {
 				clearInterval(interval);
-				page.render('timeout.png');
 				throw 'Timeout waiting for ' + desc;
 			}
 		}, 100);

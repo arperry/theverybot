@@ -1,15 +1,16 @@
 // chat.js
 // Responding to messages from other users
 var VeryBotChat = {
-	_unknownUser: false,
 	getSpeaker: function(line) {
+		'use strict';
 		var match = line.match(/<span class="username" data-name="([^"]+)">/);
 		if (match && match.length >= 2) {
 			return match[1];
 		}
-		return VeryBotChat._unknownUser;
+		return false;
 	},
 	getText: function(line) {
+		'use strict';
 		var match = line.match(/<em>([^<]+)<\/em>/);
 		if (match && match.length >= 2) {
 			return match[1];
@@ -17,6 +18,7 @@ var VeryBotChat = {
 		return '';
 	},
 	listen: function(lines, record, opponent, version, acceptFeedback) {
+		'use strict';
 		var i, speaker, text, feedback = new Array();
 		for(i = 0; i < lines.length; ++i) {
 			speaker = VeryBotChat.getSpeaker(lines[i]);
@@ -37,12 +39,15 @@ var VeryBotChat = {
 		return feedback;
 	},
 	say: function(room, message) {
+		'use strict';
 		room.$chatbox.val(message).trigger($.Event('keydown', {which: 13, keyCode: 13}));
 	},
 	sayAbout: function(room) {
+		'use strict';
 		VeryBotChat.say(room, 'I was programmed by Showdown user Mogri. You can learn more at my Github repo: https://github.com/arperry/theverybot');
 	},
 	sayFeedback: function(room, acceptFeedback, speaker, text, feedback) {
+		'use strict';
 		if (!acceptFeedback) {
 			VeryBotChat.say(room, 'Sorry, but I\'m not taking feedback right now.');
 		} else if (text.trim() === '#feedback') {
@@ -55,6 +60,7 @@ var VeryBotChat = {
 		return feedback;
 	},
 	sayHello: function(room, record, opponent) {
+		'use strict';
 		if (record === false) {
 			VeryBotChat.say(room, 'Hello, ' + opponent + '. I am a CC1v1 bot. Say "#help" for a list of commands.');
 		} else {
@@ -62,11 +68,13 @@ var VeryBotChat = {
 		}
 	},
 	sayHelp: function(room, acceptFeedback) {
+		'use strict';
 		VeryBotChat.say(room, 'I respond to the following commands: #about '
 			+ (acceptFeedback ? '#feedback ' : '')
 			+ '#help #record');
 	},
 	sayRecord: function(room, opponent, speaker, record, version) {
+		'use strict';
 		var address = (opponent === speaker) ? 'you' : opponent;
 		if (record === false) {
 			VeryBotChat.say(room, 'This is the first time I\'ve battled ' + address + '.');

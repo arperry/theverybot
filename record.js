@@ -1,6 +1,13 @@
 // record.js
 // Storing feedback, storing and recalling W/L records
+function error(message) {
+	'use strict';
+	var fs = require('fs');
+	fs.write('error.log', message + '\n', 'a');
+}
+
 function getLifetimeRecord() {
+	'use strict';
 	var fs = require('fs'), record = { overall: { win: 0, loss: 0, tie: 0 } };
 	if (fs.exists('./record.json')) {
 		record = JSON.parse(fs.read('./record.json'));
@@ -12,6 +19,7 @@ function getLifetimeRecord() {
 }
 
 function getRecord(opponent) {
+	'use strict';
 	var fs = require('fs'), record = false;
 	if (fs.exists('./records') && fs.exists('./records/' + encodeURI(opponent))) {
 		record = JSON.parse(fs.read('./records/' + encodeURI(opponent)));
@@ -19,12 +27,8 @@ function getRecord(opponent) {
 	return record;
 }
 
-function error(message) {
-	var fs = require('fs');
-	fs.write('error.log', message + '\n', 'a');
-}
-
 function recordFeedback(feedback) {
+	'use strict';
 	var fs = require('fs');
 	if (!config.feedback) {
 		return;
@@ -36,6 +40,7 @@ function recordFeedback(feedback) {
 }
 
 function recordMatch(opponent, result) {
+	'use strict';
 	var fs = require('fs'), record = getRecord(opponent), lifetime = getLifetimeRecord();
 	if (!fs.exists('./records')) {
 		fs.makeDirectory('./records');
@@ -73,6 +78,7 @@ function recordMatch(opponent, result) {
 }
 
 module.exports = {
+	error: error,
 	getLifetimeRecord: getLifetimeRecord,
 	getRecord: getRecord,
 	recordFeedback: recordFeedback,

@@ -2,7 +2,7 @@
 // Main function
 (function() {
 	'use strict';
-	var version = '0.1',
+	var version = '0.2',
 		page = require('webpage').create(),
 		Record = require('./record.js');
 	phantom.onError = function(msg, trace) {
