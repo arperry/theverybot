@@ -8,33 +8,35 @@ The same AI used for CC1v1 could easily be applied to the 1v1 format, which is t
 
 ## State of the Bot
 
-The Very Bot is currently battle-capable. It will log on and patiently wait for someone to challenge it. It will reject any formats it isn't explicitly designed to accept (as specified in `formats.json`), and it will do its best to battle in any formats it does accept. It can be configured to play ranked battles when it has nothing else going on. See [Configuration](#configuration) below for more details.
+The Very Bot is battle-capable. It will log on and patiently wait for someone to challenge it. It will reject any formats it isn't explicitly designed to accept (as specified in `formats.json`), and it will do its best to battle in any formats it does accept. It can pick up and play existing battles, and it will eagerly do so with no regard to whether it knows the format.
+
+It can be configured to play ranked battles when it has nothing else going on. See [Configuration](#configuration) below for more details.
 
 The Very Bot records its win-loss records against individual opponents. It remembers both the cumulative record and the record for the current version of its AI.
 
 ## AI limitations
 
-The initial commit of this bot has a very simple AI, which can be summarized as follows:
+The current version of this bot (AI version 0.2) has a fairly simple AI, which can be summarized as follows:
 * For each matchup, determine each team member's optimal move (based on how much damage it is expected to deal). Pick the Pokémon with the best matchups.
 * Once battle has started, pick the most damaging move.
 
-That's _it,_ which means, among other things:
-* The bot will never use non-damaging moves if it can help it.
-* The bot has no concept of status effects, stat boosts, and so forth.
-* The bot thinks you are just as likely to pick Magikarp as Mewtwo, and it will weigh its choices accordingly.
-* The bot does not learn from mistakes. It will keep using Thunderbolt against Lighting Rod Pichu if that's its most powerful move.
-
-That said, even with this limited AI, it's more effective than you might expect. Try it and see.
+The bot doesn't currently care about boosting its stats, inflicting status, or anything else that isn't pure damage, although it knows how to deal with these things if they happen during a match. That said, it's more effective than you might expect.
 
 ### To-do list
 
 In roughly descending order by priority:
-* Recognize when a move is ineffective (e.g. because of Water Absorb/Sap Sipper) and stop using it
 * Adjust for type-boosting held items
+* Properly evaluate and use status-inflicting moves and Recover/Roost/Rest
 * Take Speed and bulk into account when deciding which Pokémon to pick
 * Eliminate penalty for "must recharge" moves (e.g. Hyper Beam) when it appears the move will KO
 * Properly evaluate the power of Return/Frustration
 * Don't use Future Sight/Doom Desire when it's already active
+
+### Version history
+
+In AI v0.2, the bot learned to recognize stat boosts, status effects, and type-nullifying abilities.
+
+In AI v0.1 (the initial version), the bot was able to pick Pokémon and moves based on how much damage it expected them to deal under normal circumstances.
 
 ## Running the bot
 
@@ -49,7 +51,7 @@ phantomjs showdown.js
 ```
 (This assumes that your working directory contains the Very Bot scripts and that the PhantomJS executable is in your path or in that directory. Adjust accordingly.)
 
-**WARNING:** The Very Bot will hijack any games on its account that begin after it starts running, whether or not it has any idea how to play that format. Don't use the bot on an account that you're currently using to battle.
+**WARNING:** The Very Bot will hijack any and all games on its account after it starts running, whether or not it has any idea how to play that format. Don't use the bot on an account that you're currently using to battle.
 
 ### Configuration
 
