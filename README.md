@@ -56,9 +56,9 @@ phantomjs showdown.js
 ### Configuration
 
 The following options are available in `config.json`:
-*`ranked`: The name of a format to autoqueue (e.g. `challengecup1v1`), or `false` if you don't want the bot to queue. Despite the name, unranked formats are OK. The bot only queues when it has no ongoing battles.
-*`queueInterval`: How many three-second intervals to wait before autoqueueing. At 0 or 1, it will queue immediately as soon as it realizes it has nothing going on. A value of at least 2 is recommended so that you have an opportunity to halt the bot between matches if desired.
-*`feedback`: The path to the file where feedback should be gathered, or `false` if you don't want to accept feedback. The path to this file must already exist (although the file itself will be created if it doesn't exist).
+* `ranked`: The name of a format to autoqueue (e.g. `challengecup1v1`), or `false` if you don't want the bot to queue. Despite the name, unranked formats are OK. The bot only queues when it has no ongoing battles.
+* `queueInterval`: How many three-second intervals to wait before autoqueueing. At 0 or 1, it will queue immediately as soon as it realizes it has nothing going on. A value of at least 2 is recommended so that you have an opportunity to halt the bot between matches if desired.
+* `feedback`: The path to the file where feedback should be gathered, or `false` if you don't want to accept feedback. The path to this file must already exist (although the file itself will be created if it doesn't exist).
 
 ## Is this OK?
 
